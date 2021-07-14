@@ -1,7 +1,9 @@
 <template>
-  <div id="app">
+  <div id="app" style="position: relative">
     <!--<img alt="Vue logo" src="./assets/logo.png">-->
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <p>Happy birthday to Gu Heng</p>
+    <div style="position: absolute; top: 0;"> <HelloWorld msg="Welcome to Your Vue.js App"/></div>
+
   </div>
 </template>
 
@@ -12,10 +14,6 @@ export default {
   name: 'App',
   components: {
     HelloWorld
-  },
-  mounted() {
-    const { NODE_ENV } = process.env;
-    document.documentElement.className = NODE_ENV;
   }
 }
 </script>

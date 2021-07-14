@@ -9,6 +9,11 @@
 <!--        </div>-->
 <!--        <div style="width: 100%;"><img src="../assets/friendList/bottom.png" alt="bottom_info"></div>-->
 <!--      </div>-->
+      <div class="wishesModle" style="width: 500px; height: 100px;overflow: scroll; margin-left: 0;background-color: white">
+        <div v-for="(item,id) in info.slice(0,wishCount)" :key="id">
+          <div v-if="item">{{item.wish}}</div>
+        </div>
+      </div>
       <div v-show="banghuiFlag === 1" class="banghuiModle">
         <div class="btn" style="margin-left: 920px; margin-top: 40px;" @click="close()">
           <img src="../assets/close.png">
@@ -27,7 +32,7 @@
           <div style="height: 250px; overflow: scroll">
               <audio id="voice" :src="getVoiceSrc()" hidden></audio>
               <div v-for="(item,id) in info" :key="id">
-                <div v-if="item" class="messageList" style="display: flex;" @click="messageIndex=item.id;handlePlay('voice')">
+                <div v-if="item" class="messageList" style="display: flex;" @click="messageIndex=item.id;handlePlay('voice','musicAudio')">
                     <div><img src="../assets/message/tubiao.png" style="width: 40px" alt="message_icon"></div>
                     <div style="margin-left: 10px; padding-top: 10px; font-size: large; height: 53px" >
                       {{item.username}}
@@ -53,16 +58,22 @@
           </div>
         </div>
       </div>
-      <div v-show="zhanjiFlag === 1" class="zhanjiModle" style="margin: 0 auto">
+      <div v-show="zhanjiFlag === 1" class="zhanjiModle" style="margin: 0 auto; position: relative">
         <img :src="getZhanjiSrc()">
-        <button type="button" v-on:click="zhanjiCount = (zhanjiCount+1)%3" style="margin-top: -60%; margin-left: -30px">
-          {{ zhanjiCount }}</button>
+        <div class="btn" style="position: absolute; top:5px; right: -10px" @click="close()">
+          <img src="../assets/close.png">
+        </div>
+        <div class="btn" v-on:click="zhanjiCount = (zhanjiCount+2)%3" style="position: absolute;top:270px; left: 35px; width: 30px; height: 30px;"></div>
+        <div class="btn" v-on:click="zhanjiCount = (zhanjiCount+1)%3" style="position: absolute;top:270px; right: 35px; width: 30px; height: 30px;"></div>
       </div>
       <div v-show="musicFlag === 1" class="musicModle">
-        <div style="display: flex; flex-wrap: wrap; justify-content: left; overflow: scroll; width: 560px; max-height: 260px; margin-top: 120px; margin-left: 20px">
+        <div class="btn" style="margin-left: 755px; margin-top: 5px" @click="close()">
+          <img src="../assets/close.png">
+        </div>
+        <div style="display: flex; flex-wrap: wrap; justify-content: left; overflow: scroll; width: 570px; max-height: 260px; margin-top: 80px; margin-left: 20px">
           <audio id="musicAudio" :src="getMusicSrc()" hidden></audio>
-          <div v-for="(item,id) in musicInfo" :key="id" style="width:180px; height: 80px; margin-right: 5px; margin-bottom: 5px;">
-            <div class="card" style="width:180px; height: 80px; padding: 0 0; background-color: #cac0b4" @click="musicIndex=item.id;handlePlay('musicAudio')">
+          <div v-for="(item,id) in musicInfo" :key="id" style="width:183px; height: 80px; margin-right: 5px; margin-bottom: 5px;">
+            <div class="card" style="width:183px; height: 80px; padding: 0 0; background-color: #cac0b4" @click="musicIndex=item.id;handlePlay('musicAudio','voice')">
               <div class="card-title">{{item.music_name}}</div>
               <div class="card-body" style="padding-top: 0;">
                 <p style="padding: 0 0; margin: 0 0">演唱者：{{item.username}}</p>
@@ -95,12 +106,13 @@ export default {
   components: {},
   data(){
     return{
+      timer:null,
       info:{
         "id": 0,
         "username": "岚棠",
         "friendType": "student",
         "job": "qixiu",
-        "signature": "signature test",
+        "wish": "wish test",
         "sentence": "sentecne test",
       },
       musicInfo:{
@@ -114,6 +126,7 @@ export default {
         "username": "不会奶的盆栽"
       },
       zhanjiCount: 0,
+      wishCount: 0,
       // friendFlag: 0,
       banghuiFlag: 0,
       messageFlag: 0,
@@ -124,8 +137,14 @@ export default {
     }
   },
   methods:{
-    handlePlay(id) {
+    handlePlay(id, tempid) {
       var audio = document.getElementById(id);
+
+      var temp = document.getElementById(tempid);
+      if(temp!==null && !temp.paused){
+        temp.pause();
+      }
+
       if(audio!==null){
         if(audio.paused){
           audio.play();
@@ -198,10 +217,21 @@ export default {
 
   },
   created() {
+    clearInterval(this.timer);
+    this.timer = null;
     this.getData();
     this.getMusicData();
     this.getImgData();
+    this.timer = setInterval(()=>{
+      this.wishCount++;
+      if (this.wishCount >=8)
+        this.wishCount = 8;
+    },1000);
   },
+  beforeDestroy() {
+    clearInterval(this.timer);
+    this.timer = null;
+  }
 }
 </script>
 
